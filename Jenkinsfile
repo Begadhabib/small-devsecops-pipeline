@@ -25,6 +25,19 @@ pipeline {
             }
         }
 
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    ls -la
+                    if [ -f package.json ]; then
+                        npm install
+                    else
+                        echo "No package.json found - skipping npm stage"
+                    fi
+                '''
+            }
+        }
+
         stage("Sonarqube Analysis") {
             steps {
                 withSonarQubeEnv('sonar-server') {
@@ -44,19 +57,6 @@ pipeline {
                         waitForQualityGate abortPipeline: true
                     }
                 }
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                sh '''
-                    ls -la
-                    if [ -f package.json ]; then
-                        npm install
-                    else
-                        echo "No package.json found - skipping npm stage"
-                    fi
-                '''
             }
         }
     }
