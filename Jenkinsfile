@@ -12,6 +12,12 @@ pipeline {
 
     stages {
 
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
         stage('Checkout from Git') {
             steps {
                 git branch: 'feature/CI', 
@@ -19,9 +25,16 @@ pipeline {
             }
         }
 
-        stage('Clean Workspace') {
+        stage('Install Dependencies') {
             steps {
-                cleanWs()
+                sh '''
+                    ls -la
+                    if [ -f package.json ]; then
+                        npm install
+                    else
+                        echo "No package.json found - skipping npm stage"
+                    fi
+                '''
             }
         }
 
@@ -44,19 +57,6 @@ pipeline {
                         waitForQualityGate abortPipeline: true
                     }
                 }
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                sh '''
-                    ls -la
-                    if [ -f package.json ]; then
-                        npm install
-                    else
-                        echo "No package.json found - skipping npm stage"
-                    fi
-                '''
             }
         }
     }
