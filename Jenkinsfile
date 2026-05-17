@@ -1,41 +1,62 @@
-pipeline{
+pipeline {
     agent any
-    tools{
+
+    tools {
         jdk 'jdk17'
         nodejs 'node16'
     }
+
     environment {
-        SCANNER_HOME=tool 'sonar-scanner'
+        SCANNER_HOME = tool 'sonar-scanner'
     }
+
     stages {
-        stage('clean workspace'){
-            steps{
+
+        stage('Checkout from Git') {
+            steps {
+                git branch: 'feature/CI', 
+                    url: 'https://github.com/Begadhabib/small-devsecops-pipeline.git'
+            }
+        }
+
+        stage('Clean Workspace') {
+            steps {
                 cleanWs()
             }
         }
-        stage('Checkout from Git'){
-            steps{
-                git branch: 'feature/CI', url: 'https://github.com/Begadhabib/small-devsecops-pipeline.git'
-            }
-        }
-        stage("Sonarqube Analysis "){
-            steps{
+
+        stage("Sonarqube Analysis") {
+            steps {
                 withSonarQubeEnv('sonar-server') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Game \
-                    -Dsonar.projectKey=Game '''
+                    sh """
+                        $SCANNER_HOME/bin/sonar-scanner \
+                        -Dsonar.projectName=Game \
+                        -Dsonar.projectKey=Game
+                    """
                 }
             }
         }
-        stage("quality gate"){
-           steps {
+
+        stage("Quality Gate") {
+            steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token' 
+                    timeout(time: 5, unit: 'MINUTES') {
+                        waitForQualityGate abortPipeline: true
+                    }
                 }
-            } 
+            }
         }
+
         stage('Install Dependencies') {
             steps {
-                sh "npm install"
+                sh '''
+                    ls -la
+                    if [ -f package.json ]; then
+                        npm install
+                    else
+                        echo "No package.json found - skipping npm stage"
+                    fi
+                '''
             }
         }
     }
