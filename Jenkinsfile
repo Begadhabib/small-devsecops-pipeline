@@ -12,16 +12,16 @@ pipeline {
 
     stages {
 
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
         stage('Checkout from Git') {
             steps {
                 git branch: 'feature/CI', 
                     url: 'https://github.com/Begadhabib/small-devsecops-pipeline.git'
-            }
-        }
-
-        stage('Clean Workspace') {
-            steps {
-                cleanWs()
             }
         }
 
