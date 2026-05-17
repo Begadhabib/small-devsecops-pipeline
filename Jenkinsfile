@@ -15,7 +15,7 @@ pipeline{
         }
         stage('Checkout from Git'){
             steps{
-                git branch: 'master', url: 'https://github.com/Begadhabib/small-devsecops-pipeline.git'
+                git branch: 'feature/CI', url: 'https://github.com/Begadhabib/small-devsecops-pipeline.git'
             }
         }
         stage("Sonarqube Analysis "){
