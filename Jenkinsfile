@@ -28,9 +28,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                    ls -la
-                    if [ -f package.json ]; then
-                        npm install
+                    if [ -f Chess/package.json ]; then
+                        cd Chess && npm install
                     else
                         echo "No package.json found - skipping npm stage"
                     fi
