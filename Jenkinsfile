@@ -70,5 +70,14 @@ pipeline {
                 }
             }
         }
+        stage('Docker Build') {
+            steps {
+                sh '''
+                    cd Chess
+                    docker build -t my_chess_app .
+                    docker images
+                '''
+            }
+        }
     }
 }
