@@ -79,5 +79,22 @@ pipeline {
                 '''
             }
         }
+        stage('Docker Scan Using Trivy') {
+    steps {
+        sh '''
+            set -e
+
+            trivy image \
+            --format json \
+            --output trivy-report.json \
+            my_chess_app:latest
+
+            echo "=== files generated ==="
+            ls -lah trivy-report.json
+        '''
+
+        archiveArtifacts artifacts: 'trivy-report.json'
+    }
+}
     }
 }
