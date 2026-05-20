@@ -85,7 +85,7 @@ pipeline {
             set -e
 
             trivy image \
-            --format json \
+            --format json \s
             --output trivy-report.json \
             my_chess_app:latest
 
@@ -96,5 +96,10 @@ pipeline {
         archiveArtifacts artifacts: 'trivy-report.json'
     }
 }
+stage('Deploy to container'){
+            steps{
+                sh 'docker run -d --name my_chess_app -p 3000:5000 my_chess_app:latest'
+            }
+        }
     }
 }
