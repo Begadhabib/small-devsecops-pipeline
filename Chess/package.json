@@ -2,7 +2,7 @@
 	"name": "chess",
 	"version": "0.0.1",
 	"dependencies": {
-		"package.json": "^2.0.1",
-		"socket.io": "^2.5.1"
+		"package.json": "^0.0.0",
+		"socket.io": "^4.8.3"
 	}
 }
