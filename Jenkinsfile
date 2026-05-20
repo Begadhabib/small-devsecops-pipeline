@@ -85,7 +85,7 @@ pipeline {
             set -e
 
             trivy image \
-            --format json \s
+            --format json \
             --output trivy-report.json \
             my_chess_app:latest
 
