@@ -1,14 +1,13 @@
 var fs = require("fs"),
-app = require('http').createServer(handler),
-io = require('socket.io').listen(app),
-url = require("url"),
-port = process.env.PORT || 5000,
-queue = {
-	'W' : [],
-	'B' : [],
-	'U' : [] // undefined (player does not care which color)
-};
-
+    app = require('http').createServer(handler),
+    io = require('socket.io')(app),
+    url = require("url"),
+    port = process.env.PORT || 5000,
+    queue = {
+        'W': [],
+        'B': [],
+        'U': []
+    };
 app.listen(port);
 console.log("HTTPS server listening on port " + port);
 function handler(req, resp){
