@@ -48,18 +48,6 @@ pipeline {
                 }
             }
         }
-        stage('OWASP FS SCAN') {
-            steps {
-                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-            }
-        }
-        stage('TRIVY FS SCAN') {
-            steps {
-                sh "trivy fs . > trivyfs.txt"
-            }
-        }
-
 
         stage("Quality Gate") {
             steps {
@@ -70,35 +58,64 @@ pipeline {
                 }
             }
         }
-        stage('Docker Build') {
+
+        stage('OWASP FS SCAN') {
             steps {
-                sh '''
-                    cd Chess
-                    docker build -t my_chess_app .
-                    docker images
-                '''
+                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
+
+        stage('TRIVY FS SCAN') {
+            steps {
+                sh "trivy fs . > trivyfs.txt"
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                dir('Chess') {
+                    sh '''
+                        docker build -t my_chess_app .
+                        docker tag my_chess_app begad1/my_chess_app:latest
+                        docker images
+                    '''
+                }
+            }
+        }
+
         stage('Docker Scan Using Trivy') {
-    steps {
-        sh '''
-            set -e
+            steps {
+                sh '''
+                    set -e
+                    trivy image \
+                        --format json \
+                        --output trivy-report.json \
+                        begad1/my_chess_app:latest
 
-            trivy image \
-            --format json \
-            --output trivy-report.json \
-            my_chess_app:latest
+                    echo "=== files generated ==="
+                    ls -lah trivy-report.json
+                '''
+                archiveArtifacts artifacts: 'trivy-report.json'
+            }
+        }
 
-            echo "=== files generated ==="
-            ls -lah trivy-report.json
-        '''
+        stage("Docker Push") {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker-hub-creds', toolName: 'docker') {
+                        sh "docker push begad1/my_chess_app:latest"
+                    }
+                }
+            }
+        }
 
-        archiveArtifacts artifacts: 'trivy-report.json'
-    }
-}
-stage('Deploy to container'){
-            steps{
-                sh 'docker run -d --name my_chess_app -p 3000:5000 my_chess_app:latest'
+        stage('Deploy to Container') {
+            steps {
+                sh '''
+                    docker rm -f my_chess_app || true
+                    docker run -d --name my_chess_app -p 3000:5000 begad1/my_chess_app:latest
+                '''
             }
         }
     }
