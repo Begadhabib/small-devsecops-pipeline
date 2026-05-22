@@ -2,7 +2,7 @@
 
 ![Architecture Diagram](https://github.com/user-attachments/assets/400bd0ba-ce53-4b17-b1a5-3a5e0a36bb4d)
 
-## Project Vision
+## Project Overview
 This project is designed as a hands-on DevSecOps pipeline for a Node.js chess web app. The goal is to demonstrate how to automate code quality, security, and deployment using modern CI/CD practices. It’s a practical example for learning, experimenting, and showing best practices in secure software delivery.
 
 ## Why This Setup?
@@ -90,11 +90,7 @@ Access at: `http://<your-node-ip>:30000`
 - Add Docker Hub and Kubernetes credentials as needed
 - Run the pipeline and watch the stages in Jenkins
 
-## Summary
-This project is a real-world example of how to combine security, automation, and cloud-native technologies in a single pipeline. It’s perfect for learning DevSecOps, experimenting with CI/CD, and understanding how to build secure, modern applications from code to Kubernetes.
+
 
 ---
 
-Feel free to fork, experiment, and use this as a base for your own DevSecOps journey!
-
-— Begad
