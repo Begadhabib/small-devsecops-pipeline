@@ -118,5 +118,15 @@ pipeline {
                 '''
             }
         }
+        stage('Deploy to Kubernetes') {
+    steps {
+        script {
+            withKubeConfig(credentialsId: 'k8s') {
+                sh 'kubectl apply -f k8s/'
+                sh 'kubectl get all -n chess'
+            }
+        }
+    }
+}
     }
 }
